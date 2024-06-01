@@ -5,10 +5,12 @@ const {
   createEmpleado,
   editEmpleado,
   getEmpleado,
+  verificarCodigo
 } = require("../controllers/empleado.controller");
 
 router.post("/createEmpleado", createEmpleado);
 router.post("/editEmpleado", editEmpleado);
-router.get("/getEmpleado", getEmpleado);
+router.post("/verificarCodigo", verificarCodigo);
+router.post("/getEmpleado", getEmpleado);
 
 module.exports = router;

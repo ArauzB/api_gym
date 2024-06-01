@@ -153,8 +153,71 @@ const getEmpleado = async (req, res) => {
   });
 };
 
+
+const verificarCodigo = async (req, res) => {
+  const { token, codigo } = req.body;
+
+  jwt.verify(token, process.env.SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(401).json({
+        message: "Token inválido",
+        auth: false,
+        token: null,
+      });
+    }
+
+    id_usuario = decoded.id;
+
+    console.log(id_usuario);
+
+    connection.query(
+      `SELECT ESTADO FROM CLIENTES WHERE ID = ?`,
+      [id_usuario],
+      (error, results) => {
+        if (error) {
+          console.log(error);
+          return res.status(500).json({
+            message: "Error en el servidor",
+          });
+        } else if (results.length === 0) {
+          return res.status(404).json({
+            message: "Usuario no encontrado",
+          });
+        } else {
+          const codigoClave = results[0].ESTADO;
+          if (codigoClave === codigo) {
+            connection.query(
+              `UPDATE EMPLEADOS SET ESTADO = NULL WHERE ID = ?`,
+              [id_usuario],
+              (error, results) => {
+                if (error) {
+                  console.log(error);
+                  return res.status(500).json({
+                    message: "Error en el servidor",
+                  });
+                } else {
+                  res.json({
+                    message: "Código verificado con éxito",
+                    verified: true,
+                  });
+                }
+              }
+            );
+          } else {
+            res.json({
+              message: "Código incorrecto",
+              verified: false,
+            });
+          }
+        }
+      }
+    );
+  });
+};
+
 module.exports = {
   createEmpleado,
   editEmpleado,
   getEmpleado,
+  verificarCodigo
 };
