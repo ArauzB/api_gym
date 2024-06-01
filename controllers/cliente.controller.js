@@ -211,9 +211,29 @@ const verificarCodigo = async (req, res) => {
 };
 
 
+const cliente = async (req, res) => {
+ 
+    connection.query(
+      `SELECT c.*
+      FROM CLIENTES c
+      JOIN CLIENTE_MEMBRESIA cm ON c.ID = cm.CLIENTE_ID
+      WHERE cm.FECHA_INICIO <= CURDATE() AND cm.FECHA_FIN >= CURDATE();
+      `,
+      (error, results) => {
+        if (error) {
+          console.log(error);
+        } else {
+          res.json(results);
+        }
+      }
+    );
+  };
+
+
 module.exports = {
   createCliente,
   editCliente,
   getCliente,
-  verificarCodigo
+  verificarCodigo,
+  cliente
 };
