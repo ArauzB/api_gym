@@ -263,6 +263,37 @@ const procesarPagoYActualizarMembresia = (req, res) => {
   );
 };
 
+const getOrdenes = async (req, res) => {
+
+  connection.query(
+    `SELECT 
+    c.ID AS CITA_ID,
+    cl.NOMBRE AS CLIENTE_NOMBRE,
+    e.NOMBRE AS INSTRUCTOR_NOMBRE,
+    e.APELLIDO AS INSTRUCTOR_APELLIDO,
+    c.FECHA,
+    c.HORA,
+    c.DURACION_MINUTOS,
+    c.TIPO_CITA
+FROM 
+    CITAS c
+JOIN 
+    CLIENTES cl ON c.CLIENTE_ID = cl.ID
+JOIN 
+    EMPLEADOS e ON c.INSTRUCTOR_ID = e.ID
+`,
+    (error, results) => {
+      if (error) {
+        console.log(error);
+      } else {
+        res.json(results);
+      }
+    }
+  );
+}
+
+
+
 
 module.exports = {
   obtenerEstadoMembresia,

@@ -153,7 +153,6 @@ const getEmpleado = async (req, res) => {
   });
 };
 
-
 const verificarCodigo = async (req, res) => {
   const { token, codigo } = req.body;
 

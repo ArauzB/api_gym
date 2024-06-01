@@ -210,7 +210,6 @@ const verificarCodigo = async (req, res) => {
   });
 };
 
-
 const cliente = async (req, res) => {
  
     connection.query(
