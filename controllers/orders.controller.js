@@ -266,21 +266,33 @@ const procesarPagoYActualizarMembresia = (req, res) => {
 const getOrdenes = async (req, res) => {
 
   connection.query(
-    `SELECT 
-    c.ID AS CITA_ID,
-    cl.NOMBRE AS CLIENTE_NOMBRE,
-    e.NOMBRE AS INSTRUCTOR_NOMBRE,
-    e.APELLIDO AS INSTRUCTOR_APELLIDO,
-    c.FECHA,
-    c.HORA,
-    c.DURACION_MINUTOS,
-    c.TIPO_CITA
-FROM 
-    CITAS c
-JOIN 
-    CLIENTES cl ON c.CLIENTE_ID = cl.ID
-JOIN 
-    EMPLEADOS e ON c.INSTRUCTOR_ID = e.ID
+    `
+    SELECT
+    o.ID AS ORDEN_ID,
+    o.CLIENTE_ID,
+    c.NOMBRE AS CLIENTE_NOMBRE,
+    o.FECHA,
+    eo.NOMBRE AS ESTADO_ORDEN,
+    o.TOTAL,
+    do.ID AS DETALLE_ID,
+    do.MEMBRESIA_ID,
+    m.NOMBRE AS MEMBRESIA_NOMBRE,
+    do.CANTIDAD,
+    do.PRECIO_UNITARIO
+FROM
+    ORDENES o
+JOIN
+    DETALLE_ORDEN do ON o.ID = do.ORDEN_ID
+JOIN
+    CLIENTES c ON o.CLIENTE_ID = c.ID
+JOIN
+    MEMBRESIAS m ON do.MEMBRESIA_ID = m.ID
+JOIN
+    ESTADOS_ORDEN eo ON o.ESTADO_ORDEN_ID = eo.ID
+WHERE
+    o.ESTADO_ORDEN_ID = 2;
+
+    
 `,
     (error, results) => {
       if (error) {
@@ -300,5 +312,6 @@ module.exports = {
   crearOrdenConMembresias,
   finalizarOrden,
   obtenerEstadoOrden,
-  procesarPagoYActualizarMembresia
+  procesarPagoYActualizarMembresia,
+  getOrdenes
 };
