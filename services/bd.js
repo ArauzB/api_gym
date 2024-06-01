@@ -3,12 +3,12 @@ const caPath = './ca.pem';
 const mysql = require('mysql2');
 const fs = require('fs');
 require('dotenv').config();
-const {HOST, PORT_BD, USER, PASSWORD, DATABASE} = process.env;
+const {HOST, PORT_BD, USER_BD, PASSWORD, DATABASE} = process.env;
 
 const connectionConfig = {
   host: HOST,
   port: PORT_BD,
-  user: USER,
+  user: USER_BD,
   password: PASSWORD, 
   database: DATABASE,
   ssl: {
