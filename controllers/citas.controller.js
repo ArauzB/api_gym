@@ -1,5 +1,6 @@
 const { connection } = require("../services/bd");
 const jwt = require("jsonwebtoken");
+require('dotenv').config()
 
 const asignarRutina = (req, res) => {
   const { token, clienteId, rutinaId } = req.body;

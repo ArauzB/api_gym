@@ -2,6 +2,7 @@ const { connection } = require("../services/bd");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const { transporter } = require("../services/nodemailer.services");
+require('dotenv').config()
 
 const createEmpleado = async (req, res) => {
   const { nombre, apellido, telefono, email, password, rol_id } = req.body;

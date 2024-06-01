@@ -1,5 +1,6 @@
 const { connection } = require("../services/bd");
 const jwt = require("jsonwebtoken");
+require('dotenv').config()
 
 
 const obtenerEstadoMembresia = (req, res) => {

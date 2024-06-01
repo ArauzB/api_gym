@@ -1,4 +1,5 @@
 const { connection } = require("../services/bd");
+require('dotenv').config()
 const jwt = require("jsonwebtoken");
 
 const createProducto = async (req, res) => {
