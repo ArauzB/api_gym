@@ -229,37 +229,29 @@ const obtenerEstadoOrden = (req, res) => {
 };
 
 // Procesar pago y actualizar membresía
-const procesarPagoYActualizarMembresia = (req, res) => {
+const procesarPagoYActualizarMembresia = async (req, res) => {
   const { orderId } = req.body;
 
-  // Primero, actualizamos la membresía del cliente
-  connection.query(
-    `INSERT INTO CLIENTE_MEMBRESIA (CLIENTE_ID, MEMBRESIA_ID, FECHA_INICIO, FECHA_FIN) 
-    SELECT CLIENTE_ID, MEMBRESIA_ID, CURDATE(), DATE_ADD(CURDATE(), INTERVAL MEMBRESIAS.DURACION_MESES MONTH)
-    FROM ORDENES
-    INNER JOIN DETALLE_ORDEN ON ORDENES.ID = DETALLE_ORDEN.ORDEN_ID
-    INNER JOIN MEMBRESIAS ON DETALLE_ORDEN.MEMBRESIA_ID = MEMBRESIAS.ID
-    WHERE ORDENES.ID = ?`,
-    [orderId],
-    (error, results) => {
-      if (error) {
-        return res.status(500).json({ message: 'Error al actualizar la membresía del cliente', error });
-      }
+  try {
+    // Primero, actualizamos la membresía del cliente
+    const insertMembresiaQuery = `
+      INSERT INTO CLIENTE_MEMBRESIA (CLIENTE_ID, MEMBRESIA_ID, FECHA_INICIO, FECHA_FIN) 
+      SELECT CLIENTE_ID, MEMBRESIA_ID, CURDATE(), DATE_ADD(CURDATE(), INTERVAL MEMBRESIAS.DURACION_MESES MONTH)
+      FROM ORDENES
+      INNER JOIN DETALLE_ORDEN ON ORDENES.ID = DETALLE_ORDEN.ORDEN_ID
+      INNER JOIN MEMBRESIAS ON DETALLE_ORDEN.MEMBRESIA_ID = MEMBRESIAS.ID
+      WHERE ORDENES.ID = ?
+    `;
+    await query(insertMembresiaQuery, [orderId]);
 
-      // Luego, actualizamos el estado de la orden a pagado (ID 2)
-      connection.query(
-        'UPDATE ORDENES SET ESTADO_ORDEN_ID = 2 WHERE ID = ?',
-        [orderId],
-        (error, results) => {
-          if (error) {
-            return res.status(500).json({ message: 'Error al actualizar el estado de la orden', error });
-          }
+    // Luego, actualizamos el estado de la orden a pagado (ID 2)
+    const updateOrderQuery = 'UPDATE ORDENES SET ESTADO_ORDEN_ID = 2 WHERE ID = ?';
+    await query(updateOrderQuery, [orderId]);
 
-          res.json({ message: 'Pago procesado con éxito y membresía actualizada' });
-        }
-      );
-    }
-  );
+    res.json({ message: 'Pago procesado con éxito y membresía actualizada' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al procesar el pago y actualizar la membresía', error });
+  }
 };
 
 
